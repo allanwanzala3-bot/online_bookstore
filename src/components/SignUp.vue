@@ -1,6 +1,12 @@
 <script setup>
 
 import { ref } from 'vue'
+import {useAuth} from '../services/auth'
+import {useRouter} from "vue-router";
+const router=useRouter ();
+
+const {signup}=useAuth()
+
 
 const showPassword = ref(false)//icon
 const password = ref(null) //model
@@ -32,12 +38,15 @@ const rules = {
         location:location.value,
         address:address.value,
         password:password.value,
+        role:2,
+
+        //role 1 is admin,role 2 is for customer
     }
-    try{
-        localStorage.setItem("user",JSON.stringify(data))
-    }catch{
-        console.log("Error signing up")
-    }
+        signup(data)
+        router.push('/').then(() => {
+            router.go(0)
+        });
+    
   }
 </script>
 <template>
@@ -45,7 +54,10 @@ const rules = {
         <v-row>
             <v-col>
                 <v-card max-width="80%" class="bg-secondary">
-                    <v-form class="mt-12 mb-6">
+                    <v-img src ="/logo.png" height="150" width="200" class="mt-4"></v-img>
+                    <v-card-title class="ma-5">Sign Up</v-card-title>
+                    <v-divider></v-divider>
+                    <v-form class="mt-10 mb-4">
                         <v-row>
                             
                             <v-col md ="3">  
@@ -135,12 +147,13 @@ const rules = {
                             
                             
                             <v-col md ="6">  
-                            <v-btn   @click="register()" >Sign Up</v-btn>
+                            <v-btn   @click="register()" block >Sign Up</v-btn>
                             </v-col>
                             <v-col md ="6"> 
                                
                                 <div>
-                                    Already have an account?
+                                    Already have an account
+                                    <router-link to="/login">Login</router-link>
 
                                 </div>
                             </v-col>
