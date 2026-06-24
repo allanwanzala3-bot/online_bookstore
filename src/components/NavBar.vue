@@ -5,6 +5,7 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const { logout } = useAuth()
 const isAuthenticated = localStorage.getItem('isAuthenticated')
+const isAdmin = localStorage.getItem('isAdmin')
 const user = JSON.parse(localStorage.getItem('user'))
 
 let letter = ''
@@ -34,7 +35,8 @@ function logOut(){
 <v-btn to="/library">Library</v-btn>
 <v-btn to="/cart">Cart</v-btn>
 <v-btn to="/wishlist">Wishlist</v-btn>
-<v-btn to="/admin">Admin</v-btn>
+<v-btn to="/admin" >Admin</v-btn>
+
 <v-btn icon="mdi-account" v-if="isAuthenticated" variant="tonal">{{letter}}
             <v-menu activator="parent">
                 <v-list>
