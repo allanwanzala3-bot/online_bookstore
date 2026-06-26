@@ -5,11 +5,11 @@ import { useUsersStore } from '../stores/users'
 import { useOrdersStore } from '../stores/orders'
 
 const booksStore = useBooksStore()
-const usersStore = useUsersStore()
+const userStore = useUsersStore()
 const ordersStore = useOrdersStore()
 
 const books= booksStore.books
-const users = usersStore.users
+const users = userStore.users
 const orders = ordersStore.orders
 
 //map helps to access each nested object using Object.values
@@ -28,6 +28,7 @@ const allOrders = Object.values(orders).map(order => {
 });
 
 const tab = ref(null)
+const refreshKey=ref(0);
 const showAddBookDialog = ref(false)
 const showEditBookDialog = ref(false)
 const showAddUserDialog = ref(false)
@@ -53,7 +54,7 @@ const rating = ref(null)
 function addBook(){
     const bookData = {
         bookId: bookId.value,
-        bookName: bookName.value,
+        name: bookName.value,
         price: price.value,
         description: description.value,
         long_description: long_description.value,
@@ -63,10 +64,8 @@ function addBook(){
         rating: rating.value
     }
     // to do: update books in the store
-    const updatedBook = {
-        ...books,
-        12: bookData
-    }
+    booksStore.addBook(bookData)
+    close()
 }
 
 //edit book
@@ -96,10 +95,15 @@ function updateBook(){
     }
 
     //to do update book
-
+booksStore.edit(bookId.value,bookData)
     close()
+    refreshKey.value+=1
 }
-
+//delete
+function destroyBook(id){
+    booksStore.deleteBook(id);
+    refreshKey.value+=1;
+}
 //user models
 const userId = ref(null)
 const firstname = ref(null)
@@ -123,7 +127,7 @@ function addUser(){
         role: 2,
     }
     //to do: add user
-
+userStore.addUser(data)
     close()
 }
 
@@ -139,6 +143,7 @@ function editUser(user){
     showEditUserDialog.value = true
 }
 
+
 //update user
 function updateUser(){
     const data = {
@@ -152,11 +157,18 @@ function updateUser(){
         password: "qwerty1234..",
         role: 2,
     }
-    //to do: edit user
+   
 
+    //to do: edit user
+userStore.editUser(userId.value, data)
+refreshKey.value+=1
     close()
 }
-
+ //delete
+function destroyUser(id){
+    usersStore.deleteUser(id);
+    refreshKey.value+=1;
+}
 function close(){
     //books
     bookId.value = null
@@ -186,7 +198,7 @@ function close(){
 </script>
 
 <template>
-    <v-container class=" mt-12 bg-secondary">
+    <v-container class=" mt-12 bg-secondary":key="refreshKey">
         <v-card>
             <v-tabs v-model="tab" align-tabs="center" color="primary" >
                 <v-tab :value="1">Books</v-tab>
@@ -234,7 +246,7 @@ function close(){
                                         <td>{{ item.genre }}</td>
                                         <td> <v-btn color="warning" size="small"><v-icon icon="mdi-eye" ></v-icon> View</v-btn> </td>
                                         <td> <v-btn color="blue" size="small" @click="editBook(item)"><v-icon icon="mdi-pencil" ></v-icon> Edit</v-btn> </td>
-                                        <td> <v-btn color="error" size="small"><v-icon icon="mdi-delete" ></v-icon> Delete</v-btn> </td>
+                                        <td> <v-btn color="error" size="small"><v-icon icon="destroyBook(item.id)" ></v-icon> Delete</v-btn> </td>
                                     </tr>
                                 </tbody>
                             </v-table>
@@ -287,7 +299,7 @@ function close(){
                                         <td>{{ item.address }}</td>
                                         <td> <v-btn color="warning" size="small"><v-icon icon="mdi-eye" ></v-icon> View</v-btn> </td>
                                         <td> <v-btn color="blue" size="small" @click="editUser(item)"><v-icon icon="mdi-pencil" ></v-icon> Edit</v-btn> </td>
-                                        <td> <v-btn color="error" size="small"><v-icon icon="mdi-delete" ></v-icon> Delete</v-btn> </td>
+                                        <td> <v-btn color="error" size="small"@click="destroyUser"><v-icon icon="mdi-delete" ></v-icon> Delete</v-btn> </td>
                                     </tr>
                                 </tbody>
                             </v-table>
